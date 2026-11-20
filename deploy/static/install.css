@@ -1,0 +1,16 @@
+.product-bar { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; }
+.product-download { display: grid; justify-items: end; gap: 5px; text-align: right; }
+.product-download a { white-space: nowrap; }
+.product-bar .version { margin: 4px 0 0; color: #a0b1c9; font: .78rem ui-monospace, monospace; }
+.install-command:not([hidden]) { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+.install-command code { flex: 1; min-width: 0; overflow-x: auto; padding: 6px 9px; border-radius: 5px; white-space: nowrap; scrollbar-width: thin; background: #202734; color: #e0e8f8; font: .82rem/1.55 ui-monospace, monospace; }
+.install-command button { flex: none; border: 0; border-radius: 4px; padding: 5px 8px; background: #31435e; color: #edf4ff; font: inherit; font-size: .78rem; cursor: pointer; }
+.install-command button:hover { background: #405777; }
+.install-command :focus-visible { outline: 2px solid #9dc5ff; outline-offset: -2px; }
+.install-help { margin-top: 10px; color: #bac5d4; font-size: .86rem; }
+.install-help summary { cursor: pointer; }
+.install-help ol, .install-help p { margin-top: 7px; }
+@media (max-width: 480px) {
+  .product-bar { gap: 9px; }
+  .product-download a { padding: 7px 8px; font-size: .8rem; }
+}

@@ -1,0 +1,13 @@
+node_modules/
+*.vsix
+reports/**/workspace/
+reports/**/storage/
+reports/**/runtime-snapshot/
+
+# Local runs and build outputs
+reports/
+.DS_Store
+.env
+.env.*
+/before.json
+/after.json

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Harness — агент для работы с кодом в VS Code. Скачать VSIX, установить и посмотреть изменения.">
+  <meta name="theme-color" content="#13161b">
+  <link rel="icon" href="/harness/icon.png">
+  <title>Harness для VS Code</title>
+  <style>
+    :root { color-scheme: dark; font: 16px/1.55 system-ui, sans-serif; background: #13161b; color: #e9edf4; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    main { max-width: 42rem; margin: 0 auto; padding: 64px 25px 44px; }
+    .heading { display: flex; gap: 16px; align-items: center; }
+    .heading img { width: 58px; height: 58px; border-radius: 13px; }
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: clamp(2.2rem, 8vw, 3.25rem); line-height: 1.08; letter-spacing: -.045em; }
+    h2 { margin-bottom: 14px; font-size: 1.15rem; }
+    h3 { font: 600 .92rem/1.5 ui-monospace, monospace; }
+    p, li { color: #bac5d4; }
+    .description { margin-top: 19px; max-width: 33rem; }
+    .download { padding: 9px 15px; border-radius: 7px; background: #81b6ff; color: #0a203d; font-weight: 680; text-decoration: none; }
+    .download:hover { background: #a4cbff; }
+    a:focus-visible { outline: 2px solid #e8f1ff; outline-offset: 4px; }
+    section { margin-top: 32px; padding-top: 21px; border-top: 1px solid #2d3644; }
+    ol, ul { margin: 0; padding-left: 1.2rem; }
+    article ul { margin-top: 6px; }
+    article + article { margin-top: 17px; }
+    code { font-size: .875em; color: #e0e8f8; background: #202734; border-radius: 4px; padding: .13em .3em; }
+    @media (max-width: 480px) { main { padding: 34px 20px; } .heading img { width: 42px; height: 42px; } .heading { gap: 9px; } h1 { font-size: clamp(1.5rem, 6.5vw, 2rem); } }
+  </style>
+  <link rel="stylesheet" href="/harness/install.css?v=2">
+  <script src="/harness/install.js?v=2" defer></script>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="product-bar">
+        <div class="heading">
+          <img src="/harness/icon.png" alt="" width="58" height="58">
+          <div><h1>Harness</h1><p id="version" class="version" hidden></p></div>
+        </div>
+        <div class="product-download">
+          <a class="download" href="/harness/download">Скачать VSIX</a>
+        </div>
+      </div>
+      <p class="description">Агент для работы с кодом в VS Code. Подключай GLM или Codex, запускай инструменты и продолжай длинные задачи в чате.</p>
+    </header>
+
+    <section aria-labelledby="install">
+      <h2 id="install">Как установить</h2>
+      <div class="install-command" data-product="harness" hidden>
+        <code tabindex="0"></code><button type="button" aria-live="polite">Скопировать</button>
+      </div>
+      <details class="install-help">
+        <summary>Ручная установка</summary>
+      <ol>
+        <li>Скачай <code>Harness.vsix</code>.</li>
+        <li>В VS Code открой палитру команд (<kbd>⌘⇧P</kbd> или <kbd>Ctrl+Shift+P</kbd>).</li>
+        <li>Выбери <strong>Extensions: Install from VSIX…</strong> и укажи скачанный файл.</li>
+      </ol>
+        <p>На macOS, если команда <code>code</code> отсутствует, выбери <strong>Shell Command: Install 'code' command in PATH</strong> в палитре VS Code и открой терминал заново.</p>
+      </details>
+    </section>
+
+    <section aria-labelledby="changes">
+      <h2 id="changes">Изменения</h2>
+      <article>
+        <h3>0.15.52</h3>
+        <ul>
+          <li>Когда выходит новый релиз, внизу панели Harness появляется кнопка «Обновиться».</li>
+        </ul>
+      </article>
+      <article>
+        <h3>0.15.51</h3>
+        <ul>
+          <li>Запущенную команду можно перевести в фон. Агент продолжит, когда получит результат.</li>
+          <li>Длинные логи сокращаются с первого запроса и сохраняют ссылку на полный вывод.</li>
+          <li>Исправлен JSON preflight. Чтение и запись кэша учитываются отдельно.</li>
+        </ul>
+      </article>
+      <article>
+        <h3>0.15.50</h3>
+        <ul>
+          <li>Длинные команды автоматически уходят в фон, а агент ждёт завершения по событию.</li>
+          <li>Preflight передаёт идентификаторы успешных проверок инструментов.</li>
+        </ul>
+      </article>
+    </section>
+  </main>
+  <script>
+    fetch('/harness/download', {headers: {Accept: 'application/json'}})
+      .then(response => response.ok ? response.json() : null)
+      .then(release => {
+        if (typeof release?.version !== 'string') return;
+        const version = document.getElementById('version');
+        version.textContent = release.version;
+        version.hidden = false;
+      })
+      .catch(() => {});
+  </script>
+</body>
+</html>

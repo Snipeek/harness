@@ -1,0 +1,452 @@
+{
+  "name": "glm-token-usage",
+  "displayName": "Harness",
+  "description": "Harness: coding agent with GLM and ChatGPT connections, tools and subagents.",
+  "publisher": "snipeek",
+  "version": "0.15.83",
+  "icon": "media/extension-icon.png",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": [
+    "AI",
+    "Other"
+  ],
+  "main": "./extension.js",
+  "activationEvents": [
+    "onStartupFinished",
+    "onWebviewPanel:glmAI.chat"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false,
+      "description": "AI can read files and run approved commands in this workspace."
+    }
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "check": "node scripts/check.js",
+    "package": "node scripts/package.js",
+    "benchmark": "node scripts/benchmark.js",
+    "eval": "node scripts/eval.js",
+    "eval:quality": "node scripts/eval-quality.js",
+    "eval:summary": "node scripts/summarize-quality.js",
+    "eval:compaction": "node scripts/eval-compaction.js"
+  },
+  "contributes": {
+    "configurationDefaults": {
+      "workbench.browser.newTabPlacement": "sideGroup"
+    },
+    "commands": [
+      {
+        "command": "glmAI.addToChat",
+        "title": "Harness: Add to Chat"
+      },
+      {
+        "command": "glmAI.setupBrowser",
+        "title": "Harness: Set Up Integrated Browser",
+        "icon": "$(globe)"
+      },
+      {
+        "command": "glmAI.open",
+        "title": "Harness: Open Chat",
+        "icon": "$(comment-discussion)"
+      },
+      {
+        "command": "glmAI.openChat",
+        "title": "Harness: Open Conversation",
+        "icon": "$(comment-discussion)"
+      },
+      {
+        "command": "glmAI.newChat",
+        "title": "Harness: New Chat",
+        "icon": "$(add)"
+      },
+      {
+        "command": "glmAI.history",
+        "title": "Harness: Refresh Conversations",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "glmAI.renameChat",
+        "title": "Harness: Rename Conversation",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "glmAI.deleteChat",
+        "title": "Harness: Delete Conversation",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "glmAI.attachSelection",
+        "title": "Harness: Add Selection to Chat",
+        "icon": "$(mention)"
+      },
+      {
+        "command": "glmAI.configure",
+        "title": "Harness: Configure Provider",
+        "icon": "$(settings-gear)"
+      },
+      {
+        "command": "glmTokenUsage.refresh",
+        "title": "Harness · GLM: Refresh Quota"
+      },
+      {
+        "command": "glmAI.mcpToken",
+        "title": "Harness: Set MCP Token"
+      },
+      {
+        "command": "glmAI.integrations",
+        "title": "Harness: Skills and MCP"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "glmAI",
+          "title": "Harness",
+          "icon": "media/ai.svg"
+        }
+      ]
+    },
+    "views": {
+      "glmAI": [
+        {
+          "type": "webview",
+          "id": "glmAI.manager",
+          "name": "Harness"
+        }
+      ]
+    },
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "glmAI.addToChat",
+          "when": "resourceScheme == file",
+          "group": "navigation@90"
+        }
+      ],
+      "view/title": [],
+      "editor/title": [
+        {
+          "command": "glmAI.open",
+          "group": "navigation@100"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "glmAI.attachSelection",
+          "when": "editorHasSelection",
+          "group": "AI"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "glmAI.open",
+        "key": "ctrl+escape",
+        "mac": "cmd+escape"
+      },
+      {
+        "command": "glmAI.attachSelection",
+        "key": "ctrl+alt+k",
+        "mac": "cmd+alt+k",
+        "when": "editorTextFocus"
+      }
+    ],
+    "configuration": {
+      "title": "AI · GLM Token Usage",
+      "properties": {
+        "glmTokenUsage.token": {
+          "type": "string",
+          "default": "",
+          "description": "Legacy GLM API key. Prefer AI: Configure Provider (stored in SecretStorage).",
+          "scope": "application"
+        },
+        "glmTokenUsage.provider": {
+          "type": "string",
+          "enum": [
+            "glm",
+            "openai",
+            "custom"
+          ],
+          "default": "glm",
+          "description": "Active model provider.",
+          "scope": "application"
+        },
+        "glmTokenUsage.glmBaseUrl": {
+          "type": "string",
+          "default": "https://api.z.ai/api/coding/paas/v4",
+          "description": "GLM base URL. For pay-as-you-go use https://api.z.ai/api/paas/v4.",
+          "scope": "application"
+        },
+        "glmTokenUsage.glmModel": {
+          "type": "string",
+          "default": "glm-5.3",
+          "description": "GLM model ID. Empty imports an existing GLM model from ~/.claude/settings.json.",
+          "scope": "application"
+        },
+        "glmTokenUsage.openaiModel": {
+          "type": "string",
+          "default": "",
+          "description": "OpenAI model ID for the Responses API. Set when configuring OpenAI.",
+          "scope": "application"
+        },
+        "glmTokenUsage.customBaseUrl": {
+          "type": "string",
+          "default": "",
+          "description": "Custom API base URL.",
+          "scope": "application"
+        },
+        "glmTokenUsage.customModel": {
+          "type": "string",
+          "default": "",
+          "description": "Custom model ID.",
+          "scope": "application"
+        },
+        "glmTokenUsage.customProtocol": {
+          "type": "string",
+          "enum": [
+            "chat",
+            "responses"
+          ],
+          "default": "chat",
+          "description": "Protocol used by the custom endpoint.",
+          "scope": "application"
+        },
+        "glmTokenUsage.hooks": {
+          "type": "array",
+          "default": [],
+          "scope": "machine-overridable",
+          "description": "User or workspace Harness hooks. Project hooks from .harness/config.json run after these hooks."
+        },
+        "glmTokenUsage.chatPlacement": {
+          "type": "string",
+          "enum": [
+            "active",
+            "beside"
+          ],
+          "default": "active",
+          "description": "Open new Harness chats in the current editor group or beside it."
+        },
+        "glmTokenUsage.attachOpenFile": {
+          "type": "boolean",
+          "default": true,
+          "description": "Attach the last open workspace file as a path, or include the highlighted lines when text is selected."
+        },
+        "glmTokenUsage.maxToolRounds": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Maximum model/tool rounds per turn. Set 0 to disable this optional task limit (default). Stop remains available."
+        },
+        "glmTokenUsage.maxOutputTokens": {
+          "type": "number",
+          "default": 16384,
+          "minimum": 256,
+          "maximum": 65536,
+          "description": "Maximum output tokens per model request."
+        },
+        "glmTokenUsage.reasoningEffort": {
+          "type": "string",
+          "default": "low",
+          "description": "GLM reasoning effort. GLM-5.3 thinking stays enabled.",
+          "enum": [
+            "low",
+            "high",
+            "max"
+          ],
+          "scope": "application"
+        },
+        "glmTokenUsage.idleCompactionMinutes": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0,
+          "description": "Opt in to a paid background summary of large idle chats. Set the number of idle minutes for your provider. Zero disables this."
+        },
+        "glmTokenUsage.modelContextWindows": {
+          "type": "object",
+          "default": {},
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 8192,
+            "maximum": 10000000
+          },
+          "description": "Context window overrides by provider/model, for example glm/glm-5.3. A window set in a saved connection takes priority."
+        },
+        "glmTokenUsage.contextWindow": {
+          "type": "number",
+          "default": 128000,
+          "description": "Usable context budget. Token estimate is heuristic and calibrated from API usage; not a tokenizer guarantee.",
+          "minimum": 8192,
+          "maximum": 1000000
+        },
+        "glmTokenUsage.turnTokenBudget": {
+          "type": "number",
+          "default": 0,
+          "description": "Per-turn token budget including subagents and compaction, using budgetAccounting. Full API token statistics are unchanged. Set 0 to disable this optional task limit (default). Stop remains available.",
+          "minimum": 0
+        },
+        "glmTokenUsage.turnTimeoutSeconds": {
+          "type": "number",
+          "default": 0,
+          "description": "Wall-clock budget per turn. Set 0 to disable this optional task limit (default). Stop remains available.",
+          "minimum": 0,
+          "maximum": 14400
+        },
+        "glmTokenUsage.subagentMaxRounds": {
+          "type": "number",
+          "default": 0,
+          "description": "Maximum model/tool rounds per subagent. Set 0 to disable this optional task limit (default). Stop remains available.",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "glmTokenUsage.subagentTokenBudget": {
+          "type": "number",
+          "default": 0,
+          "description": "Per-subagent token budget using budgetAccounting. Set 0 to disable this optional task limit (default). Stop remains available.",
+          "minimum": 0
+        },
+        "glmTokenUsage.sandbox": {
+          "type": "boolean",
+          "default": false,
+          "description": "Opt-in macOS workspace sandbox for commands: workspace/tmp writes, no network. Fails closed on unsupported platforms. Approvals still apply.",
+          "scope": "application"
+        },
+        "glmTokenUsage.mcpServers": {
+          "type": "array",
+          "default": [],
+          "description": "Trusted MCP servers. Local commands start when tools are searched. Configure only servers you trust; use AI: Set MCP Token for remote auth.",
+          "scope": "application",
+          "items": {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "command": {
+                "type": "string"
+              },
+              "args": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "url": {
+                "type": "string"
+              },
+              "env": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "stdio",
+                  "http",
+                  "sse"
+                ]
+              },
+              "headers": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "cwd": {
+                "type": "string"
+              },
+              "allowHttp": {
+                "type": "boolean",
+                "default": false
+              }
+            }
+          }
+        },
+        "glmTokenUsage.workProfile": {
+          "type": "string",
+          "enum": [
+            "balanced",
+            "architecture"
+          ],
+          "default": "balanced",
+          "description": "Both profiles use the selected starting effort. Architecture adds structured verification and optional review.",
+          "scope": "application"
+        },
+        "glmTokenUsage.regressionAudit": {
+          "type": "boolean",
+          "default": true,
+          "description": "Select existing tests from the diff and compare assertions before and after in approved isolated runs."
+        },
+        "glmTokenUsage.architectureReview": {
+          "type": "boolean",
+          "default": true,
+          "scope": "application",
+          "description": "Review Architecture-profile changes independently before completing a task."
+        },
+        "glmTokenUsage.importClaudeIntegrations": {
+          "type": "boolean",
+          "default": true,
+          "scope": "application",
+          "description": "Discover Claude user/project MCP configurations and user/project/enabled-plugin skills. Does not copy OAuth sessions or execute hooks. Unapproved project servers require explicit connection approval."
+        },
+        "glmTokenUsage.promptStyle": {
+          "type": "string",
+          "enum": [
+            "detailed",
+            "compact"
+          ],
+          "default": "compact",
+          "description": "Compact core with on-demand workflows; detailed remains available for comparison. Small synthetic pilot supports lower token usage, not model parity."
+        },
+        "glmTokenUsage.toolProfile": {
+          "type": "string",
+          "enum": [
+            "standard",
+            "lean"
+          ],
+          "default": "standard",
+          "description": "Lean loads more tools through search_tools. Independent of prompt/effort for controlled evaluation."
+        },
+        "glmTokenUsage.effortPolicy": {
+          "type": "string",
+          "enum": [
+            "adaptive",
+            "fixed"
+          ],
+          "default": "adaptive",
+          "description": "Adaptive allows model-selected effort. Fixed preserves the configured effort for controlled measurements."
+        },
+        "glmTokenUsage.bundledSkills": {
+          "type": "boolean",
+          "default": true,
+          "description": "Discover bundled architecture, task continuity and acceptance workflows. Contents load on demand; project skills override bundled versions."
+        },
+        "glmTokenUsage.budgetAccounting": {
+          "type": "string",
+          "enum": [
+            "uncached",
+            "total"
+          ],
+          "default": "uncached",
+          "description": "Token budget accounting for main and subagents. Uncached excludes provider-reported cached input repetitions; total counts every input/output token. Usage statistics always retain full API usage."
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "@mozilla/readability": "^0.6.0",
+    "ajv": "^8.20.0",
+    "linkedom": "^0.18.15",
+    "jose": "^6.2.17"
+  }
+}

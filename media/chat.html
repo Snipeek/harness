@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src {{cspSource}} data:; style-src {{cspSource}}; script-src 'nonce-{{nonce}}';">
+<link href="{{css}}" rel="stylesheet">
+<title>Harness</title>
+</head>
+<body>
+<div id="app">
+<header class="toolbar" hidden><button id="brand"><span id="title">New conversation</span></button><button id="focus-view"></button><button id="new"></button><button id="settings"></button></header>
+<div id="empty-brand" class="empty-brand"><img class="ai-brand-icon" src="{{brandIcon}}" alt=""><span>Harness</span></div>
+<section id="source" class="source" hidden><span id="source-text"></span><button id="copy" class="primary">Продолжить копией</button></section>
+<main id="conversation" aria-label="Переписка" tabindex="0">
+  <section id="welcome" class="welcome">
+    <svg class="welcome-mascot" viewBox="0 0 24 24" aria-hidden="true" shape-rendering="crispEdges">
+      <path fill="#4c9aff" d="M11 2h2v3h5v2h2v9h-2v2h-2v4h-3v-3h-2v3H8v-4H6v-2H4V7h2V5h5z"/>
+      <path fill="#2275d7" d="M2 10h2v6H2zm18 0h2v6h-2zM8 17h8v2H8z"/>
+      <path fill="#0c2548" d="M7 8h10v6H7z"/>
+      <path fill="#b7dcff" d="M8 9h2v2H8zm6 0h2v2h-2z"/>
+      <path fill="#72b7ff" d="M11 12h2v1h-2z"/>
+    </svg>
+    <p id="welcome-title" class="welcome-title">Что сделаем в этом проекте?</p>
+    <p id="welcome-hint">Опиши задачу или добавь файл для контекста.</p>
+    <div id="setup" class="setup" hidden>
+      <h1>Подключите первую модель</h1>
+      <p>Выберите, как Harness будет обращаться к модели.</p>
+      <div class="setup-options">
+        <button id="connect-codex" type="button"><strong>Войти через ChatGPT</strong><span>Выбрать модель из подписки Codex</span></button>
+        <button id="connect" type="button"><strong>Добавить модель по API-ключу</strong><span>GLM, OpenAI или другой совместимый провайдер</span></button>
+      </div>
+    </div>
+  </section>
+  <div id="messages"></div><div id="activity-indicator" class="activity-indicator" role="status" hidden><span id="activity-spinner"></span><span id="activity-label">Herding…</span></div>
+</main>
+<footer>
+<div id="notice" hidden></div>
+<section id="approval" class="approval" hidden aria-label="Подтверждение действия">
+  <div id="action-approval">
+  <div class="approval-heading"><span id="approval-icon"></span><strong id="approval-title"></strong><span id="approval-queue"></span></div>
+  <pre id="approval-detail"></pre><div id="approval-cwd" class="muted"></div><div id="approval-reason" class="muted"></div>
+  <div class="approval-question">Do you want to proceed?</div>
+  <details id="remember-command" hidden><summary>Запомнить разрешение</summary><button id="remember-chat">Для этого чата</button><button id="remember-project">Для этого проекта</button></details>
+  <details id="hunk-review" hidden><summary>Выбрать фрагменты правки</summary><div id="hunk-list"></div><button id="apply-hunks">Применить выбранное</button></details>
+  <div class="approval-actions"><button id="allow"><span class="choice-number">1</span><span>Yes</span></button><button id="allow-auto"><span class="choice-number">2</span><span>Yes, and use Auto mode</span></button><button id="deny"><span class="choice-number">3</span><span>No</span></button></div>
+  <div class="approval-foot"><button id="review">View diff</button><span>Esc to reject</span></div>
+  </div>
+  <form id="question-panel" hidden aria-labelledby="question-title">
+    <h2 id="question-title"></h2>
+    <p id="question-why" hidden></p>
+    <div id="question-options" role="group" aria-labelledby="question-title"></div>
+    <div class="question-actions">
+      <button type="button" id="question-custom" aria-controls="question-editor" aria-expanded="false">Написать свой ответ</button>
+      <button type="button" id="question-skip" title="Esc">Пропустить</button>
+    </div>
+    <div id="question-editor" hidden>
+      <textarea id="question-other" aria-label="Свой ответ" placeholder="Свой ответ…" rows="2" maxlength="2000"></textarea>
+      <button type="submit" id="question-send" disabled>Ответить</button>
+    </div>
+  </form>
+</section>
+  <div class="composer">
+    <div id="attachments" class="attachments composer-attachments"></div>
+    <textarea id="prompt" rows="1" placeholder="⌘ Esc to focus or unfocus Harness" aria-label="Сообщение AI"></textarea>
+    <div id="slash-menu" class="slash-menu" hidden></div><div id="popup" class="popup" hidden></div>
+    <div class="composer-bottom">
+      <div class="composer-options"><button id="attach" class="icon" title="Add" aria-label="Add"></button><button id="commands" class="icon command-icon" title="Show command menu (/)" aria-label="Commands" aria-expanded="false" aria-controls="slash-menu"></button><button id="agents" class="agent-tree-trigger" aria-label="Subagents" aria-haspopup="tree" aria-expanded="false" title="Subagents"></button><button id="model" aria-haspopup="menu" aria-expanded="false">GLM</button></div><div class="composer-run"><button id="context-usage" type="button" hidden><span class="context-ring" aria-hidden="true"></span></button><button id="mode" aria-haspopup="menu" aria-expanded="false" title="Click to change, or Shift+Tab to cycle modes"></button><button id="send" class="send" title="Send message" aria-label="Send message"></button></div>
+    </div>
+  </div>
+  <div class="status-row"><span id="run-status"></span><span id="tokens"></span></div>
+  <button id="quota" class="quota" title="Обновить лимиты GLM" hidden><span id="quota-label"></span><span class="quota-track"><span id="quota-fill"></span></span><span id="quota-week"></span></button>
+  <div class="hint"><span id="workspace"></span><span>Enter ↵ · Shift+Enter</span></div>
+</footer>
+<dialog id="agent-map" class="agent-map-dialog" aria-labelledby="agent-map-title"><div class="dialog-heading"><h2 id="agent-map-title">Agent map</h2><button id="agent-map-close" class="icon" aria-label="Close agent map"></button></div><div id="agent-map-caption" class="dialog-caption"></div><div id="agent-map-content"></div></dialog>
+<dialog id="agent-detail" class="agent-detail-dialog" aria-labelledby="agent-detail-title"><div class="dialog-heading"><button id="agent-detail-back" class="icon" aria-label="Back to agent map"></button><span id="agent-detail-dot" class="agent-indicator"></span><h2 id="agent-detail-title"></h2><button id="agent-detail-close" class="icon" aria-label="Close agent details"></button></div><div id="agent-detail-content"></div></dialog>
+
+</div>
+<div id="checkpoint-menu" class="popup checkpoint-menu" role="menu" aria-label="Действия с сообщением" hidden></div>
+<script nonce="{{nonce}}" src="{{icons}}"></script>
+<script nonce="{{nonce}}" src="{{transcript}}"></script>
+<script nonce="{{nonce}}" src="{{js}}"></script>
+</body></html>
